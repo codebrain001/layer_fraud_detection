@@ -1,0 +1,7 @@
+# Project configuration file
+
+apiVersion: 1
+
+# Name of your project
+name: "Layer Anomaly Detection Project"
+
