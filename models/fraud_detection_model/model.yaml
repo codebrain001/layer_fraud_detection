@@ -4,11 +4,16 @@ apiVersion: 1
 name: fraud_detection_model
 
 # optional.
-description: "XGBoost Modeling"
+description: "XGBoost Modeling to detect fraudulent transactions"
 
 # required. used to determine how to train this model
 training:
-    - name: "fraud_detection_model_training"
-      description: "Fraud Detection Model Training"
-      entrypoint: model.py
-      environment: requirements.txt
+  name: "fraud_detection_model_training"
+  description: "Fraud Detection Model Training"
+
+
+  # The source model definition file 
+  entrypoint: model.py
+
+  # File includes the required python libraries with their correct versions
+  environment: requirements.txt
