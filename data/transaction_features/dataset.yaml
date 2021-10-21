@@ -1,0 +1,68 @@
+apiVersion: 1
+
+type: featureset
+
+#required field
+name: "fraud_detection_features" #Name of the featureset. The name will be used to identify the featureset in the Data Catalog.
+#optional field
+description: "Ethereum transaction features of the fraud detection dataset"
+
+#required field of all the desired features with there respective name, description and source code of the feature
+features:
+  - name: flag
+    description: Identifies whether the transaction flagged as fraud or not
+    source: flag.sql
+  - name: avg_time_sent_txn
+    description: Average time between sent transactions for account in minutes
+    source: avg_time_sent_txn.sql
+  - name: avg_time_rcv_txn
+    description: Average time between received transactions for account in minutes
+    source: avg_time_rcv_txn.sql
+  - name: time_diff
+    description: Time difference between the first and last transaction
+    source: time_diff.sql
+  - name: sent_txn
+    description: Total number of sent normal transactions
+    source: sent_txn.sql
+  - name: received_txn
+    description: Total number of received normal transactions
+    source: received_txn.sql
+  - name: no_created_contracts
+    description: Total Number of created contract transactions
+    source: no_created_contracts.sql
+  - name: max_val_received
+    description: Maximum value in Ethereum ever received
+    source: max_val_received.sql
+  - name: avg_val_received
+    description: Average value in Ethereum ever received
+    source: avg_val_received.sql
+  - name: avg_val_sent
+    description: Average value of Ethererum ever sent
+    source: avg_val_sent.sql
+  - name: total_eth_sent
+    description: Total Ethererum sent for account address
+    source: total_eth_sent.sql
+  - name: total_eth_balance
+    description: Total Ethererum balance following enacted transactions
+    source: total_eth_balance.sql
+  - name: ERC20_total_eth_received
+    description: Total ERC20 token received transactions in Ethereum
+    source: ERC20_total_eth_received.sql
+  - name: ERC20_total_eth_sent
+    description:  Total ERC20 token sent transactions in Ethereum
+    source: ERC20_total_eth_sent.sql
+  - name: ERC20_total_eth_tfr
+    description: Total ERC20 token transfer to other contracts in Ether
+    source: ERC20_total_eth_tfr.sql
+  - name: ERC20_unique_sent_addr
+    description: Number of ERC20 token transactions sent to Unique account addresses
+    source: ERC20_unique_sent_addr.sql
+  - name: ERC20_unique_tok_received
+    description: Number of Unique ERC20 tokens received
+    source: ERC20_unique_tok_received.sql
+
+
+  
+
+materializations: 
+  - target: fraud-detection-dataset
