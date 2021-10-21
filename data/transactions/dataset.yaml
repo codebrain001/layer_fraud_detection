@@ -8,7 +8,6 @@ name: "fraud_detection_data" #Unique name of this dataset which will be used in 
 type: source   
 
 materializations: #Required field that contains the name of the integration where this dataset is.
-  - type: table 
     target: fraud-detection-dataset #Name of integration
     table_name: transactions_table #Name of BigQuery table containing the dataset
 
