@@ -1,0 +1,16 @@
+# Fraud detection use case
+
+#optional field. 1 by default.
+apiVersion: 1    
+
+#required field
+name: "fraud_detection_data" #Unique name of this dataset which will be used in this project to refer to this dataset.
+type: source   
+
+materializations: #Required field that contains the name of the integration where this dataset is.
+  - type: table 
+    target: fraud-detection-dataset #Name of integration
+    table_name: transactions_table #Name of BigQuery table containing the dataset
+
+#Optional field
+description: This is the reference of the use case data for this project (Ethereum Fraud detection)
