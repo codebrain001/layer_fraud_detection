@@ -1,0 +1,14 @@
+apiVersion: 1
+
+# required.
+name: fraud_detection_model
+
+# optional.
+description: "XGBoost Modeling"
+
+# required. used to determine how to train this model
+training:
+    - name: "fraud_detection_model_training"
+      description: "Fraud Detection Model Training"
+      entrypoint: model.py
+      environment: requirements.txt
