@@ -3,5 +3,5 @@
 apiVersion: 1
 
 # Name of your project
-name: "Layer Anomaly Detection Project"
+name: "Layer Anomaly Detection(Ethereum fraud detection)"
 
