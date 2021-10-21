@@ -1,8 +1,7 @@
 
-"""This file demonstrates how we can develop and train our model by using the
-`transaction_features` we've developed earlier. Every ML model project
-should have a definition file like this one.
-"""
+# Training model using develop feature sets.
+
+#Importing libaries
 from typing import Any
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import average_precision_score
@@ -10,13 +9,9 @@ import xgboost as xgb
 from layer import Featureset, Train
 
 
-def train_model(train: Train, tf: Featureset("transaction_features")) -> Any:
+def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any:
     """Model train function
-    This function is a reserved function and will be called by Layer
-    when we want this model to be trained along with the parameters.
-    Just like the `transaction_features` featureset, you can add more
-    parameters to this method to request artifacts (datasets,
-    featuresets or models) from Layer.
+    This function is a reserved function that will be called by Layer when we want this model to be trained along with the parameters.
     Args:
         train (layer.Train): Represents the current train of the model,
             passed by Layer when the training of the model starts.
@@ -29,11 +24,11 @@ def train_model(train: Train, tf: Featureset("transaction_features")) -> Any:
 
     # We create the training and label data
     train_df = tf.to_pandas()
-    X = train_df.drop(["transactionId", "is_fraud"], axis=1)
-    Y = train_df["is_fraud"]
+    X = train_df.drop(["Index", "flag"], axis=1)
+    Y = train_df["flag"]
 
-    random_state = 13
-    test_size = 0.2
+    random_state = 45
+    test_size = 0.25
     train.log_parameter("random_state", random_state)
     train.log_parameter("test_size", test_size)
     trainX, testX, trainY, testY = train_test_split(X, Y, test_size=test_size,
