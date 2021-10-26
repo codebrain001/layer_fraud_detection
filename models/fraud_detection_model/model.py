@@ -9,7 +9,7 @@ import xgboost as xgb
 from layer import Featureset, Train
 
 def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any:
-     """Model train function
+    """Model train function
     This function is a reserved function that will be called by Layer when we want this model to be trained along with the parameters.
     Args:
         train (layer.Train): Represents the current train of the model,
@@ -18,7 +18,7 @@ def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any
             an interface to access the features inside the
             `transaction_features`
     Returns:
-       model: A trained model object
+        model: A trained model object
     """
 
     # We create the training and label data
