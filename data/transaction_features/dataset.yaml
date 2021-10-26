@@ -26,7 +26,7 @@ features:
     source: sent_txn.sql
   - name: rcv_txn
     description: Total number of received normal transactions
-    source: rcv.sql
+    source: rcv_txn.sql
   - name: no_created_contracts
     description: Total Number of created contract transactions
     source: no_created_contracts.sql
@@ -61,5 +61,5 @@ features:
     description: Number of Unique ERC20 tokens received
     source: ERC20_unique_tok_rcv.sql
 
-materializations: 
-  - target: fraud-detection-dataset
+materialization: 
+  target: fraud-detection-dataset
