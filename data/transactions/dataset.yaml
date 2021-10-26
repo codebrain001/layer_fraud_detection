@@ -1,5 +1,6 @@
 # Fraud detection use case
 
+
 #optional field. 1 by default.
 apiVersion: 1    
 
@@ -12,4 +13,4 @@ materialization: #Required field that contains the name of the integration where
     table_name: transactions_table #Name of BigQuery table containing the dataset
 
 #Optional field
-description: This is the reference of the use case data for this project (Ethereum Fraud detection)
+description: This is the reference of the use case dataet for this project (Ethereum Fraud detection)
