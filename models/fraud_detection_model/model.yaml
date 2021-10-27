@@ -4,7 +4,7 @@ apiVersion: 1
 name: fraud_detection_model
 
 # optional.
-description: "XGBoost Modeling to detect fraudulent transactions"
+description: "Random Forest Modeling to detect fraudulent transactions"
 
 # required. used to determine how to train this model
 training:
