@@ -5,8 +5,8 @@ from typing import Any
 import pandas as pd # For data wrangling
 from sklearn.preprocessing import PowerTransformer # For feature scaling
 from sklearn.model_selection import train_test_split # For splitting data 
-from sklearn.metrics import roc_auc_score, classification_report #Performance metrics
 from imblearn.over_sampling import SMOTE # For oversampling
+from sklearn.metrics import classification_report, roc_auc_score #Performance metrics
 import xgboost as xgb # Machine learning model to be utilized
 from layer import Featureset, Train
 
@@ -53,32 +53,35 @@ def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any
     train.register_output(y_train)
 
     # We will use `XGBoost` for this task with fixed parameters
-    params = {
-        estimators:200,
-        subsample:0.9,
-        learningrate:0.5,
-        maxdepth:4,
-        colsamplebytree:0.7
-        }
+    n_estimators = 200
+    subsample = 0.9
+    learning_rate =0.5
+    max_depth = 4
+    colsample_bytree = 0.7
 
     # Train model
-    param = {'n_estimators':estimators, 'subsample':subsample, 'learning_rate':learningrate  ,'max_depth': max_depth,'colsample_bytree':colsamplebytree}
-    d_train = xgb.DMatrix(x_train, y_train)
-    xgb_clf = xgb.train(params, d_train)
+    param = {
+        'n_estimators':n_estimators,
+         'subsample':subsample, 
+         'learning_rate':learning_rate,
+         'max_depth': max_depth,
+         'colsample_bytree':colsample_bytree
+         }
+    d_train = xgb.DMatrix(X_train, y_train)
+    xgb_clf = xgb.train(param, d_train)
 
-
-    train.log_parameter('n_estimators', estimators)
+    train.log_parameter('n_estimators', n_estimators)
     train.log_parameter('subsample', subsample)
-    train.log_parameter('learning_rate', learningrate)
-    train.log_parameter('max_depth', maxdepth)
-    train.log_parameter('colsample_bytree', colsamplebytree)
+    train.log_parameter('learning_rate', learning_rate)
+    train.log_parameter('max_depth', max_depth)
+    train.log_parameter('colsample_bytree', colsample_bytree)
 
     # Transform test features
     X_test_norm = norm.transform(X_test)
     X_test = X_test_norm
 
     dtest = xgb.DMatrix(X_test)
-    y_pred = xgb_model.predict(dtest)
+    y_pred = xgb_clf.predict(dtest)
 
     # Track performance
     classification_report = classification_report(y_test, y_pred)
@@ -86,7 +89,7 @@ def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any
     train.log_metric("classification_report", classification_report)
     train.log_metric("roc_auc_score", roc_auc_score)
 
-    return xgb_model
+    return xgb_clf
 
 
 
