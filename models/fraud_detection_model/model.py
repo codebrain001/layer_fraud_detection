@@ -2,13 +2,16 @@
 
 #Importing libaries
 from typing import Any
+
 from sklearn.preprocessing import PowerTransformer 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import average_precision_score
-import xgboost as xgb
+# 
+from sklearn.ensemble import RandomForestClassifier
 from layer import Featureset, Train
 
 def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any:
+
     """Model train function
     This function is a reserved function that will be called by Layer when we want this model to be trained along with the parameters.
     Args:
@@ -20,8 +23,6 @@ def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any
     Returns:
         model: A trained model object
     """
-
-    # We create the training and label data
     train_df = tf.to_pandas()
     X = train_df.drop(["INDEX", "flag"], axis=1)
     y = train_df["flag"]    
@@ -40,28 +41,28 @@ def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any
     train.register_input(X_train)
     train.register_output(y_train)
 
-    max_depth = 3
-    objective = 'binary:logitraw'
-    train.log_parameter("max_depth", max_depth)
-    train.log_parameter("objective", objective)
+    # We will use `RandomForestClassifier` for this task with fixed parameters
+    estimators = 100
+    random_forest = RandomForestClassifier(n_estimators=estimators)
 
-    # Train model
-    param = {'max_depth': max_depth, 'objective': objective}
-    dtrain = xgb.DMatrix(X_train, label=y_train)
-    model_xg = xgb.train(param, dtrain)
+    # We can log parameters of this train. Later we can compare
+    # parameters of different versions of this model in the Layer
+    # Web interface
+    train.log_parameter("n_estimators", estimators)
 
-    dtest = xgb.DMatrix(X_test)
-    preds = model_xg.predict(dtest)
+    # We fit our model with the train and the label data
+    random_forest.fit(X_train, y_train)
 
+    # Let's calculate the accuracy of our model
+    y_pred = random_forest.predict(X_test)
     # Since the data is highly skewed, we will use the area under the
     # precision-recall curve (AUPRC) rather than the conventional area under
     # the receiver operating characteristic (AUROC). This is because the AUPRC
     # is more sensitive to differences between algorithms and their parameter
     # settings rather than the AUROC (see Davis and Goadrich,
     # 2006: http://pages.cs.wisc.edu/~jdavis/davisgoadrichcamera2.pdf)
-    auprc = average_precision_score(y_test, preds)
+    auprc = average_precision_score(y_test, y_pred)
     train.log_metric("auprc", auprc)
 
     # We return the model
-    return model_xg
-
+    return random_forest
