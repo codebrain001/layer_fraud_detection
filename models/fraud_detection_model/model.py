@@ -63,4 +63,5 @@ def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any
     # Save metrics of your training runs that will then be viewable in the Layer Model Catalog UI
     train.log_metric("roc_auc_score", score)
 
+    # Return the model
     return rf_clf
