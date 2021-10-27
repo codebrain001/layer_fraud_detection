@@ -53,16 +53,18 @@ def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any
     train.register_output(y_train)
 
     # We will use `XGBoost` for this task with fixed parameters
-    estimators = 200
-    subsample = 0.9
-    learningrate =0.5
-    maxdepth = 4
-    colsamplebytree = 0.7
+    params = {
+        estimators:200,
+        subsample:0.9,
+        learningrate:0.5,
+        maxdepth:4,
+        colsamplebytree:0.7
+        }
 
     # Train model
     param = {'n_estimators':estimators, 'subsample':subsample, 'learning_rate':learningrate  ,'max_depth': max_depth,'colsample_bytree':colsamplebytree}
-    dtrain = xgb.DMatrix(X_train, label=y_train)
-    xgb_model = xgb.train(param, dtrain)
+    d_train = xgb.DMatrix(x_train, y_train)
+    xgb_clf = xgb.train(params, d_train)
 
 
     train.log_parameter('n_estimators', estimators)
