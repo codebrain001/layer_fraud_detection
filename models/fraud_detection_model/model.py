@@ -1,14 +1,15 @@
-# Training model using develop feature sets.
+# Training model using developed feature sets
 
-#Importing libaries
+# Importing libaries
 from typing import Any
-
-from sklearn.preprocessing import PowerTransformer 
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import average_precision_score
-# 
-from sklearn.ensemble import RandomForestClassifier
+import pandas as pd # For data wrangling
+from sklearn.preprocessing import PowerTransformer # For feature scaling
+from sklearn.model_selection import train_test_split # For splitting data 
+from sklearn.metrics import roc_auc_score, classification_report #Performance metrics
+from imblearn.over_sampling import SMOTE # For oversampling
+import xgboost as xgb # Machine learning model to be utilized
 from layer import Featureset, Train
+
 
 def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any:
 
@@ -23,12 +24,13 @@ def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any
     Returns:
         model: A trained model object
     """
-    train_df = tf.to_pandas()
-    X = train_df.drop(["INDEX", "flag"], axis=1)
-    y = train_df["flag"]    
+    data_df = tf.to_pandas()
+    X = data_df.drop(["INDEX", "flag"], axis=1)
+    y = data_df["flag"]   
 
+    # Split data and log parameters
     random_state = 45
-    test_size = 0.25
+    test_size = 0.2
     train.log_parameter("random_state", random_state)
     train.log_parameter("test_size", test_size)
     X_train, X_test, y_train, y_test = train_test_split(X, y,
@@ -36,33 +38,57 @@ def train_model(train: Train, tf: Featureset("fraud_detection_features")) -> Any
 
     # Normalize the training features
     norm = PowerTransformer()
-    X_train = norm.fit_transform(X_train)
+    X_train_norm = norm.fit_transform(X_train)
+    X_train_norm = pd.DataFrame(X_train_norm, columns=X_train.columns)
+
+    #Oversampling with SMOTE
+    oversample = SMOTE()
+    X_tr_resample, y_tr_resample = oversample.fit_resample(X_train_norm, y_train)
+
+    #For better naming processing, let's rename the training sets
+    X_train = X_tr_resample
+    y_train = y_tr_resample
 
     train.register_input(X_train)
     train.register_output(y_train)
 
-    # We will use `RandomForestClassifier` for this task with fixed parameters
-    estimators = 100
-    random_forest = RandomForestClassifier(n_estimators=estimators)
+    # We will use `XGBoost` for this task with fixed parameters
+    estimators = 200
+    subsample = 0.9
+    learningrate =0.5
+    maxdepth = 4
+    colsamplebytree = 0.7
 
-    # We can log parameters of this train. Later we can compare
-    # parameters of different versions of this model in the Layer
-    # Web interface
-    train.log_parameter("n_estimators", estimators)
+    # Train model
+    param = {'n_estimators':estimators, 'subsample':subsample, 'learning_rate':learningrate  ,'max_depth': max_depth,'colsample_bytree':colsamplebytree}
+    dtrain = xgb.DMatrix(X_train, label=y_train)
+    xgb_model = xgb.train(param, dtrain)
 
-    # We fit our model with the train and the label data
-    random_forest.fit(X_train, y_train)
 
-    # Let's calculate the accuracy of our model
-    y_pred = random_forest.predict(X_test)
-    # Since the data is highly skewed, we will use the area under the
-    # precision-recall curve (AUPRC) rather than the conventional area under
-    # the receiver operating characteristic (AUROC). This is because the AUPRC
-    # is more sensitive to differences between algorithms and their parameter
-    # settings rather than the AUROC (see Davis and Goadrich,
-    # 2006: http://pages.cs.wisc.edu/~jdavis/davisgoadrichcamera2.pdf)
-    auprc = average_precision_score(y_test, y_pred)
-    train.log_metric("auprc", auprc)
+    train.log_parameter('n_estimators', estimators)
+    train.log_parameter('subsample', subsample)
+    train.log_parameter('learning_rate', learningrate)
+    train.log_parameter('max_depth', maxdepth)
+    train.log_parameter('colsample_bytree', colsamplebytree)
 
-    # We return the model
-    return random_forest
+    # Transform test features
+    X_test_norm = norm.transform(X_test)
+    X_test = X_test_norm
+
+    dtest = xgb.DMatrix(X_test)
+    y_pred = xgb_model.predict(dtest)
+
+    # Track performance
+    classification_report = classification_report(y_test, y_pred)
+    roc_auc_score = roc_auc_score(y_test, y_pred)
+    train.log_metric("classification_report", classification_report)
+    train.log_metric("roc_auc_score", roc_auc_score)
+
+    return xgb_model
+
+
+
+
+
+    
+   

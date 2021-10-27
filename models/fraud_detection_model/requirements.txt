@@ -1,2 +1,4 @@
 scikit-learn>=0.24
 xgboost>=1.4.0
+imbalanced-learn>=0.8.1
+
