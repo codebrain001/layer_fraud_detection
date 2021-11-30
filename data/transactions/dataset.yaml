@@ -6,7 +6,7 @@ apiVersion: 1
 
 #required field
 name: "fraud_detection_data" #Unique name of this dataset which will be used in this project to refer to this dataset.
-type: source   
+type: dataset   
 
 materialization: #Required field that contains the name of the integration where this dataset is.
     target: fraud-detection-dataset #Name of integration
