@@ -2,6 +2,7 @@ apiVersion: 1
 
 # required.
 name: fraud_detection_model
+type: model
 
 # optional.
 description: "Random Forest Modeling to detect fraudulent transactions"
